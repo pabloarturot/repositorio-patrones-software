@@ -15,6 +15,10 @@ public interface Message extends Serializable, Comparable<Message> {
     public double getTemperature();
     
     public void setTemperature(double temperature);
+    
+    public Integer getPort();
+    
+    public void setPort(Integer port);
 
     public long getTimestamp();
     
