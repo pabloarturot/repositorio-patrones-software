@@ -3,7 +3,6 @@ package com.greenhouse.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.greenhouse.base.Message;
@@ -11,113 +10,111 @@ import com.greenhouse.base.MessageDTO;
 import com.greenhouse.base.MessageType;
 
 public class TemperatureController {
-	
-	    private ContextCommController contextCommunication;
-	    private int frequencyInterval;
 
-	    public TemperatureController(){
+	private ContextCommController contextCommunication;
+	private int frequencyInterval;
 
-	        frequencyInterval=8;
-	        contextCommunication=new ContextCommControllerImpl();
-	        contextCommunication.startMeeting();
-	     
-	    }
+	public TemperatureController() {
 
+		frequencyInterval = 8;
+		contextCommunication = new ContextCommControllerImpl();
+		contextCommunication.startMeeting();
 
-	     public List<Message> getTerminalsTemperatures() {
+	}
 
-	         Map<String, Message> temperaturesMap = contextCommunication.receiveMessages();
-	         Set<String> temperatures = temperaturesMap.keySet();
+	public List<Message> getTerminalsTemperatures() {
 
-	         ArrayList<Message> lecturasTemp = new ArrayList<Message>();
+		Map<String, Message> temperaturesMap = contextCommunication
+				.receiveMessages();
+		Set<String> temperatures = temperaturesMap.keySet();
 
-	         for (String key : temperatures) {
+		long timeStamp = 0;
+		long temp;
 
-	         	Message message = temperaturesMap.get(key);
+		ArrayList<Message> lecturasTemp = new ArrayList<Message>();
 
-	             if (message != null && message.getType() == MessageType.INFO_TEMPERATURE) {               
-	                
-	                 String name = message.getAlias();
+		for (String key : temperatures) {
 
-	                 if (name == null || (name.trim()).equals("")) {
-	                     name=message.getHostIp();
-	                 }
+			Message message = temperaturesMap.get(key);
 
-	                 message.setAlias(name);
-	                 
-	                 lecturasTemp.add(message);
-	             }
-	         }
+			if (message != null
+					&& message.getType() == MessageType.INFO_TEMPERATURE) {
 
-	         return lecturasTemp;
-	     }
-	     
-	     public void checkPreferredFrequency(){
-	    	 
-	    	 Map<String, Message> temperaturesMap = contextCommunication.receiveMessages();
-	    	 
-	    	 long timeStamp=0;
-	    	 long temp;
-	    	 for (Entry<String, Message> entry : temperaturesMap.entrySet()) {
-	    		 
-	    		 if(entry.getValue().getType() == MessageType.CHANGE_FREQUENCY){
-	    			 
-	    			 temp=entry.getValue().getTimestamp();
-	    			 
-	    			 if(temp>timeStamp){
-	    				 timeStamp=temp;
-	    				 setFrequencyInterval(entry.getValue().getFrequency());
-	    			 }
-	    		 }
+				String name = message.getAlias();
+
+				if (name == null || (name.trim()).equals("")) {
+					name = message.getHostIp();
+				}
+
+				message.setAlias(name);
+
+				lecturasTemp.add(message);
+			} else if (message.getType() == MessageType.CHANGE_FREQUENCY) {
+
+				temp = message.getTimestamp();
+
+				if (temp > timeStamp) {
+					timeStamp = temp;
+					setFrequencyInterval(message.getFrequency());
+				}
 			}
-	     }
-	     
-	     public void changeTerminalsFrequency(int frequency){
-	    	 
-	    	 Message message = new MessageDTO();
-	    	 message.setFrequency(frequency);
-	    	 message.setType(MessageType.CHANGE_FREQUENCY);
-	    	 message.setTemperature(getLocalTemperature());
-	    	
-			contextCommunication.sendMessage(message);
-	    	 
-	    	 
-	     }
-	     
-	     public double getLocalTemperature(){
+		}
 
-	         return Thermometer.getTemperature();
-	     }
+		return lecturasTemp;
+	}
 
-	    
-	    public int getFrequencyInterval() {
-	        return frequencyInterval;
-	    }
-	   
-	    public void setFrequencyInterval(int param) {
+	public void changeTerminalsFrequency(int frequency) {
 
-	        if(param>0){
-	           frequencyInterval = param;           
-	        }
-	    }
+		Message message = new MessageDTO();
+		message.setFrequency(frequency);
+		message.setType(MessageType.CHANGE_FREQUENCY);
+		message.setTemperature(getLocalTemperature());
 
-	    public void getPreferredFrequency(List<Message> temperatures){
-	        
-	        long timeStamp=0;
+		contextCommunication.sendMessage(message);
 
-	        for(Message dto : temperatures){
+	}
 
-	            long temp=dto.getTimestamp();
+	public double getLocalTemperature() {
 
-	             if(temp>timeStamp){
-	                 timeStamp=temp;
-	                 setFrequencyInterval(dto.getFrequency());
-	             }
-	         }
-	    }
+		Message message = new MessageDTO();
+		message.setFrequency(getFrequencyInterval());
+		message.setTemperature(getLocalTemperature());
+		message.setType(MessageType.INFO_TEMPERATURE);
+		message.setTemperature(getLocalTemperature());
 
-	    public void closeTerminalConn(){
-	        contextCommunication.endMeeting();
-	    }
+		contextCommunication.sendMessage(message);
+
+		return Thermometer.getTemperature();
+	}
+
+	public int getFrequencyInterval() {
+		return frequencyInterval;
+	}
+
+	public void setFrequencyInterval(int param) {
+
+		if (param > 0) {
+			frequencyInterval = param;
+		}
+	}
+
+	public void getPreferredFrequency(List<Message> temperatures) {
+
+		long timeStamp = 0;
+
+		for (Message dto : temperatures) {
+
+			long temp = dto.getTimestamp();
+
+			if (temp > timeStamp) {
+				timeStamp = temp;
+				setFrequencyInterval(dto.getFrequency());
+			}
+		}
+	}
+
+	public void closeTerminalConn() {
+		contextCommunication.endMeeting();
+	}
 
 }
