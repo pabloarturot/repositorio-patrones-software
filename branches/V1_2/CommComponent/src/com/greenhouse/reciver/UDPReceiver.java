@@ -22,7 +22,7 @@ public class UDPReceiver implements Receiver{
 	    	
 	        this.listener = listener;
 	        this.networkInfoDTO = networkInfoDTO;
-	        socket = new DatagramSocket (networkInfoDTO.getTerminalPort());
+	        socket = new DatagramSocket (networkInfoDTO.getFromPort());
 	    }
 
 	    @Override

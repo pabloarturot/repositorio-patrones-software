@@ -2,31 +2,31 @@ package com.greenhouse.base;
 
 public class NetworkInfoDTO {
 
-	private String terminalHost;
-	private String dispatcherHost;
+	private String fromHost;
+	private String toHost;
 	private String mCastHost;
-	private Integer terminalPort;
-	private Integer dispatcherPort;
+	private Integer fromPort;
+	private Integer toPort;
 	private Integer mCastPort;
 	
 	public NetworkInfoDTO() {
 
 	}
 
-	public String getTerminalHost() {
-		return terminalHost;
+	public String getFromHost() {
+		return fromHost;
 	}
 
-	public void setTerminalHost(String terminalHost) {
-		this.terminalHost = terminalHost;
+	public void setFromHost(String fromHost) {
+		this.fromHost = fromHost;
 	}
 
-	public String getDispatcherHost() {
-		return dispatcherHost;
+	public String getToHost() {
+		return toHost;
 	}
 
-	public void setDispatcherHost(String dispatcherHost) {
-		this.dispatcherHost = dispatcherHost;
+	public void setToHost(String toHost) {
+		this.toHost = toHost;
 	}
 
 	public String getmCastHost() {
@@ -37,20 +37,20 @@ public class NetworkInfoDTO {
 		this.mCastHost = mCastHost;
 	}
 
-	public Integer getTerminalPort() {
-		return terminalPort;
+	public Integer getFromPort() {
+		return fromPort;
 	}
 
-	public void setTerminalPort(Integer terminalPort) {
-		this.terminalPort = terminalPort;
+	public void setFromPort(Integer fromPort) {
+		this.fromPort = fromPort;
 	}
 
-	public Integer getDispatcherPort() {
-		return dispatcherPort;
+	public Integer getToPort() {
+		return toPort;
 	}
 
-	public void setDispatcherPort(Integer dispatcherPort) {
-		this.dispatcherPort = dispatcherPort;
+	public void setToPort(Integer toPort) {
+		this.toPort = toPort;
 	}
 
 	public Integer getmCastPort() {
@@ -60,5 +60,4 @@ public class NetworkInfoDTO {
 	public void setmCastPort(Integer mCastPort) {
 		this.mCastPort = mCastPort;
 	}
-
 }
