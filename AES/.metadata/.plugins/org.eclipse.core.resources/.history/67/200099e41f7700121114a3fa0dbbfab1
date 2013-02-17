@@ -1,0 +1,18 @@
+package com.greenhouse.util;
+
+import java.util.ResourceBundle;
+
+
+public class PropertiesUtil {
+	
+	public static final String SERVER_PORT="SERVER_PORT";
+	public static final String =localhost
+	CLIENT_PORT=5558
+	CLIENT_HOST=localhost
+	ResourceBundle resources; 
+
+	public PropertiesUtil() {
+		resources = ResourceBundle.getBundle("conf");
+	}
+	
+}

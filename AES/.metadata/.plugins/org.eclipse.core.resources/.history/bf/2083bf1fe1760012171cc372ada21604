@@ -1,0 +1,10 @@
+package controller;
+
+import base.Message;
+
+public interface ControllerListener {
+
+    public void notificarMensajeTCP(Message message);
+
+    public void notificarMensajeUDP(Message message);
+}

@@ -1,0 +1,8 @@
+package com.greenhouse.reciver;
+
+public interface Receiver {
+
+	public void receive();
+
+    public void end();
+}

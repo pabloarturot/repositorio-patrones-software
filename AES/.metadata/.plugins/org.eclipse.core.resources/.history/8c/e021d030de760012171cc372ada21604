@@ -1,0 +1,49 @@
+package reciver;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.DatagramPacket;
+import java.net.MulticastSocket;
+
+import base.Message;
+
+import controller.ControllerListener;
+
+public class UDPReceiver {
+
+	 private boolean isAlive = true;
+	    private final MulticastSocket socket;
+	    private ControllerListener listener;
+
+	    public UDPReceiver(ControllerListener listener) throws IOException {
+	        this.listener = listener;
+	        socket = new MulticastSocket(8090);
+	    }
+
+	    @Override
+	    public void recibir() {
+	        while (isAlive) {
+	            DatagramPacket packet = new DatagramPacket(new byte[35], 35);
+
+	            try {
+	                socket.receive(packet);
+
+	                ByteArrayInputStream bais = new ByteArrayInputStream(packet.getData());
+	                ObjectInputStream ois = new ObjectInputStream(bais);
+	                Message mensaje = (Message) ois.readObject();
+	                ois.close();
+
+	                listener.notificarMensajeUDP(mensaje);
+	            } catch (Exception ex) {
+	                System.out.println(ex);
+	            }
+	        }
+	    }
+
+	    @Override
+	    public void finalizar() {
+	        isAlive = false;
+	        socket.close();
+	    }
+}

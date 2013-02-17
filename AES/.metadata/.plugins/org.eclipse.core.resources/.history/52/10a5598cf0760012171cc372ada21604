@@ -1,0 +1,17 @@
+package com.greenhouse.controller;
+
+import java.util.Map;
+
+import com.greenhouse.base.Message;
+
+
+public interface ContextCommController {
+
+		public void startMeeting();
+	 
+	    public void sendMessage(Message message);
+	    
+	    public Map<String, Message> receiveMessages();
+	    
+	    public void endMeeting();
+}

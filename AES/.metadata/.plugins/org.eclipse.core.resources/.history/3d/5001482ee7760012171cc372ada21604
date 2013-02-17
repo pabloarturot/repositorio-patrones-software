@@ -1,0 +1,184 @@
+package com.greenhouse.gui;
+
+public class FrameInicio extends javax.swing.JFrame{
+
+	private JPanel panelDatosLocales;
+    private JPanel panelDatosRemotos;
+    private JPanel panelTermometro;
+
+    private JLabel labelTituloDatosRemotos;
+
+    private JLabel labelTituloTempLocal;
+    private JLabel labelTituloTempLocalVal;
+
+    private JLabel labelTituloFechaTempLocal;
+    private JLabel labelTituloFechaTempLocalVal;
+
+    private JLabel labelTituloFrecuenciaLocal;
+    private JLabel labelTituloFrecuenciaVal;
+
+    private JButton buttonActualizarFrecuencia;
+    private JTextField textFieldActualizarFrecuencia;
+
+    private JTable tablaLecturasTempRemotas;
+    private JScrollPane scrollpane;
+
+
+    public FrameInicio(){
+
+        panelDatosLocales=new JPanel();
+        panelDatosLocales.setBounds(10,10,500,200);
+
+        panelTermometro=new JPanel();
+        panelTermometro.setBounds(520,10,300,410);
+        panelTermometro.setLayout(null);
+        panelTermometro.setBackground(Color.lightGray);
+        this.add(panelTermometro);
+
+        labelTituloDatosRemotos=new JLabel("DATOS LOCALES");
+        labelTituloDatosRemotos.setBounds(10,10,100,20);
+        labelTituloDatosRemotos.setVisible(true);
+        panelDatosLocales.add(labelTituloDatosRemotos);
+
+        labelTituloTempLocal=new JLabel("Lectura Temperatura:");
+        labelTituloTempLocal.setBounds(10,40,130,20);
+        labelTituloTempLocal.setVisible(true);
+        panelDatosLocales.add(labelTituloTempLocal);
+
+        labelTituloTempLocalVal=new JLabel("");
+        labelTituloTempLocalVal.setBounds(185,40,100,20);
+        labelTituloTempLocalVal.setVisible(true);
+        panelDatosLocales.add(labelTituloTempLocalVal);
+
+        labelTituloFechaTempLocal=new JLabel("Fecha Lectura:");
+        labelTituloFechaTempLocal.setBounds(10,70,130,20);
+        labelTituloFechaTempLocal.setVisible(true);
+        panelDatosLocales.add(labelTituloFechaTempLocal);
+
+        labelTituloFechaTempLocalVal=new JLabel("");
+        labelTituloFechaTempLocalVal.setBounds(185,70,100,20);
+        labelTituloFechaTempLocalVal.setVisible(true);
+        panelDatosLocales.add(labelTituloFechaTempLocalVal);
+
+        labelTituloFrecuenciaLocal=new JLabel("Frecuencia Actualización:");
+        labelTituloFrecuenciaLocal.setBounds(10,100,160,20);
+        labelTituloFrecuenciaLocal.setVisible(true);
+        panelDatosLocales.add(labelTituloFrecuenciaLocal);
+
+        labelTituloFrecuenciaVal=new JLabel("");
+        labelTituloFrecuenciaVal.setBounds(185,100,100,20);
+        labelTituloFrecuenciaVal.setVisible(true);
+        panelDatosLocales.add(labelTituloFrecuenciaVal);
+
+        buttonActualizarFrecuencia = new javax.swing.JButton();
+        buttonActualizarFrecuencia.setBounds(10,130,170,20);
+        buttonActualizarFrecuencia.setText("Fijar Nueva Frecuencia");
+        panelDatosLocales.add(buttonActualizarFrecuencia);
+
+        buttonActualizarFrecuencia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        textFieldActualizarFrecuencia=new JTextField("");
+        textFieldActualizarFrecuencia.setBounds(190,130,50,20);
+        textFieldActualizarFrecuencia.setVisible(true);
+        panelDatosLocales.add(textFieldActualizarFrecuencia);
+
+        panelDatosLocales.setVisible(true);
+        panelDatosLocales.setLayout(null);
+        panelDatosLocales.setBackground(Color.lightGray);
+        this.add(panelDatosLocales);
+
+
+        panelDatosRemotos=new JPanel();
+        panelDatosRemotos.setBounds(10,220,500,200);
+        panelDatosRemotos.setVisible(true);
+        panelDatosRemotos.setLayout(null);
+        panelDatosRemotos.setBackground(Color.lightGray);
+        this.add(panelDatosRemotos);
+
+        tablaLecturasTempRemotas = new JTable();
+        tablaLecturasTempRemotas.getTableHeader().setReorderingAllowed(false);
+
+        scrollpane=new JScrollPane(tablaLecturasTempRemotas);
+        scrollpane.setBounds(10,10,480,180);
+        scrollpane.setVisible(true);
+        panelDatosRemotos.add(scrollpane);
+
+        this.addWindowListener
+        (
+            new WindowAdapter() {
+            @Override
+                public void windowClosing(WindowEvent e) {
+                   FrameInicio.this.windowClosed();
+                }
+            }
+        );
+
+    }
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+
+        int nuevaFrecuencia=0;
+
+        try{
+          nuevaFrecuencia=new Integer(textFieldActualizarFrecuencia.getText());
+          controladorTemperatura.setFrecuenciaSeg(nuevaFrecuencia);
+        }catch(NumberFormatException nfex){
+            JOptionPane.showMessageDialog(null,"Verifique que el valor ingresado como frecuencia sea númerico","ERROR DE DATO",JOptionPane.WARNING_MESSAGE);
+        }
+
+    }
+
+    protected void windowClosed()
+    {
+        System.exit(0);
+    }
+
+    public static void main(String args[]) {
+
+        FrameInicio frame=new FrameInicio();
+        frame.setLayout(null);
+        frame.setSize(840,460);
+        frame.setVisible(true);
+        frame.setResizable(false);
+
+        controladorTemperatura = new ContextControllerTemperatura();
+
+        while(true){
+
+            Mensaje MensajeLecturaLocal = controladorTemperatura.obtenerLecturaLocal();
+
+            sleep(1000);//esperando llegada de informacion de las otras terminales para refrescar
+
+            frame.labelTituloTempLocalVal.setText(new Double(MensajeLecturaLocal.getTemperatura()).toString()+" °C");
+            frame.labelTituloFechaTempLocalVal.setText(new Date(MensajeLecturaLocal.getTimestamp()).toString());
+
+            JPanel panelTermometroChart=ChartPanelHelper.getTermometroPlot("TEMPERATURA LOCAL",MensajeLecturaLocal.getTemperatura());
+            panelTermometroChart.setBounds(0,0,300,410);
+            frame.panelTermometro.add(panelTermometroChart);
+            panelTermometroChart.repaint();
+            panelTermometroChart.setVisible(true);
+
+            int frecuenciaSegs=controladorTemperatura.getFrecuenciaSeg();
+            frame.labelTituloFrecuenciaVal.setText(new Integer(frecuenciaSegs).toString());
+
+            TableModel model=TablasHelper.construirDatosTablaTemperatura(controladorTemperatura.obtenerLecturasTerminales());
+            frame.tablaLecturasTempRemotas.setModel(model);
+
+            sleep(frecuenciaSegs*1000);
+        }
+    }
+
+    private static ContextControllerTemperatura controladorTemperatura;
+
+    private static void sleep(int tiempoEsperaMilis){
+        try {
+                    Thread.sleep(tiempoEsperaMilis);
+                } catch (InterruptedException e) {
+                    System.out.println("ERROR: " + e.getMessage());
+                }
+    }
+}

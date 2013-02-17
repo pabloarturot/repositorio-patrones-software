@@ -1,0 +1,74 @@
+package reciver;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import base.Message;
+
+import controller.ControllerListener;
+
+public class TCPReceiver implements Receiver {
+
+	private boolean isAlive = true;
+    private ServerSocket serverSocket;
+    private ControllerListener controllerListener;
+
+    public TCPReceiver(ControllerListener controllerListener) throws IOException {
+        serverSocket = new ServerSocket(8899);
+        this.controllerListener = controllerListener;
+    }
+
+    @Override
+    public void recibir() {
+        while (isAlive) {
+            try {
+                Socket cliente = serverSocket.accept();
+                Thread thread = new Thread(new ClienteSocket(cliente));
+                thread.start();
+            } catch (IOException ex) {
+                System.out.println(ex);
+            }
+        }
+    }
+
+    @Override
+    public void finalizar() {
+        isAlive = false;
+        try {
+            serverSocket.close();
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+    }
+
+    private class ClienteSocket implements Runnable {
+
+        private Socket cliente;
+
+        public ClienteSocket(Socket cliente) {
+            this.cliente = cliente;
+        }
+
+        @Override
+        public void run() {
+            try {
+                ObjectInputStream ois = new ObjectInputStream(cliente.getInputStream());
+                Message mensaje = (Message) ois.readObject();
+                controllerListener.notificarMensajeTCP(mensaje);
+
+                cliente.shutdownInput();
+                cliente.shutdownOutput();
+
+                ois.close();
+                cliente.getOutputStream().close();
+                cliente.close();
+            } catch (IOException ex) {
+                System.out.println(ex);
+            } catch (ClassNotFoundException ex) {
+                System.out.println(ex);
+            }
+        }
+    }
+}

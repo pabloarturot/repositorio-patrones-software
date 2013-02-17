@@ -1,0 +1,27 @@
+package com.greenhouse.forwader;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+import com.greenhouse.base.Message;
+
+
+public class TCPForwarder implements Forwarder{
+
+	 @Override
+	    public void enviar(Message mensaje) throws IOException {
+	        
+	        Socket socket = new Socket(mensaje.getHostIp(), 8899);
+	        socket.setSoTimeout(100);
+	        
+	        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+	        oos.writeObject(mensaje);
+	        
+	        socket.shutdownInput();
+	        socket.shutdownOutput();
+	        socket.close();
+	        
+	        oos.close();
+	    }
+}

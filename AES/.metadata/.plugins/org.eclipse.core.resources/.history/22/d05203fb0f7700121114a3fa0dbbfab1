@@ -1,0 +1,49 @@
+package com.greenhouse.util;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import chuidiang.ejemplos.DatoUdp;
+
+public class MarshallUtil {
+
+	
+	public byte [] toByteArray()
+    {
+        try
+        {
+           
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            ObjectOutputStream os = new ObjectOutputStream (bytes);
+            os.writeObject(this);
+            os.close();
+            return bytes.toByteArray();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+	
+	public static DatoUdp fromByteArray (byte [] bytes)
+    {
+        try
+        {
+         
+            ByteArrayInputStream byteArray = new ByteArrayInputStream(bytes);
+            ObjectInputStream is = new ObjectInputStream(byteArray);
+            DatoUdp aux = (DatoUdp)is.readObject();
+            is.close();
+            return aux;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+}

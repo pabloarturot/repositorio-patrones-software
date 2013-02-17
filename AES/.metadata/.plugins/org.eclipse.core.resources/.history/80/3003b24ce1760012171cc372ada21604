@@ -1,0 +1,8 @@
+package reciver;
+
+public interface Receiver {
+
+	public void recibir();
+
+    public void finalizar();
+}
