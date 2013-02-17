@@ -36,9 +36,9 @@ public class UDPForwarder implements Forwarder{
 				 packet = new DatagramPacket(
 			        		byteArray,
 			        		byteArray.length,
-			                InetAddress.getByName(networkInfoDTO.getDispatcherHost()),
-			                networkInfoDTO.getDispatcherPort());
-				 DatagramSocket datagramSocket = new DatagramSocket(networkInfoDTO.getTerminalPort());
+			                InetAddress.getByName(networkInfoDTO.getToHost()),
+			                networkInfoDTO.getToPort());
+				 DatagramSocket datagramSocket = new DatagramSocket(networkInfoDTO.getFromPort());
 				 datagramSocket.send(packet);     
 				 datagramSocket.close();
 				break;

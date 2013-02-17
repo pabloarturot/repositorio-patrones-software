@@ -36,15 +36,15 @@ public class ContextCommControllerImpl implements ContextCommController, Control
         	NetworkInfoUtil.getBundle();
 		 	
 		 	networkInfoDTO = new NetworkInfoDTO();
-		 	networkInfoDTO.setmCastHost(NetworkInfoUtil.getHost(NetworkInfoUtil.TERMINAL_HOST));
-		 	networkInfoDTO.setDispatcherHost(NetworkInfoUtil.getHost(NetworkInfoUtil.DISPATCHER_HOST));
-		 	networkInfoDTO.setmCastPort(NetworkInfoUtil.getPort(NetworkInfoUtil.TERMINAL_PORT));
-		 	networkInfoDTO.setDispatcherPort(NetworkInfoUtil.getPort(NetworkInfoUtil.DISPATCHER_PORT));
+		 	networkInfoDTO.setFromHost(NetworkInfoUtil.getHost(NetworkInfoUtil.FROM_HOST));
+		 	networkInfoDTO.setToHost(NetworkInfoUtil.getHost(NetworkInfoUtil.TO_HOST));
+		 	networkInfoDTO.setFromPort(NetworkInfoUtil.getPort(NetworkInfoUtil.FROM_PORT));
+		 	networkInfoDTO.setToPort(NetworkInfoUtil.getPort(NetworkInfoUtil.TO_PORT));
 		 	networkInfoDTO.setmCastHost(NetworkInfoUtil.getHost(NetworkInfoUtil.MCAST_ADDR));
 		 	networkInfoDTO.setmCastPort(NetworkInfoUtil.getPort(NetworkInfoUtil.MCAST_PORT));
 		 	
 		 	
-            hostName = NetworkInfoUtil.getHost(NetworkInfoUtil.TERMINAL_NAME);
+            hostName = NetworkInfoUtil.getHost(NetworkInfoUtil.FROM_NAME);
 
             hostIp = NetworkUtil.getHostIP();
 
