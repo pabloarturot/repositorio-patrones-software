@@ -27,7 +27,11 @@ public interface Message extends Serializable, Comparable<Message> {
     public int getFrequency();
     
     public void setFrequency(int frequency);
-   
+    
+    public boolean isToDispatcher();
+    
+	public void setToDispatcher(boolean toDispatcher);
+	
 	public MessageType getType();
 
 	public void setType(MessageType type);
