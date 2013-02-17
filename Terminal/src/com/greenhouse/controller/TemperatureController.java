@@ -75,16 +75,17 @@ public class TemperatureController {
 	}
 
 	public double getLocalTemperature() {
+		
+		double temperature = Thermometer.getTemperature();
 
 		Message message = new MessageDTO();
 		message.setFrequency(getFrequencyInterval());
-		message.setTemperature(getLocalTemperature());
+		message.setTemperature(temperature);
 		message.setType(MessageType.INFO_TEMPERATURE);
-		message.setTemperature(getLocalTemperature());
 
 		contextCommunication.sendMessage(message);
 
-		return Thermometer.getTemperature();
+		return temperature;
 	}
 
 	public int getFrequencyInterval() {

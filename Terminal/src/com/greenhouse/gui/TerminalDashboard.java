@@ -29,8 +29,12 @@ public class TerminalDashboard extends javax.swing.JFrame {
 	private final JTextField updateFrequencyTextField;
 
 	private final JTable terminalsInfoTable;
+	
+	TemperatureController temperatureController;
 
-	public TerminalDashboard() {
+	public TerminalDashboard(TemperatureController temperatureController) {
+		
+		this.temperatureController = temperatureController;
 
 		this.setLayout(null);
 		this.setSize(810, 400);
@@ -96,7 +100,7 @@ public class TerminalDashboard extends javax.swing.JFrame {
 	private void jButton1ActionPerformed(final java.awt.event.ActionEvent evt) {
 
 		try {
-			new Integer(updateFrequencyTextField.getText());
+			temperatureController.changeTerminalsFrequency(new Integer(updateFrequencyTextField.getText()));
 
 		} catch (final NumberFormatException nfex) {
 			JOptionPane.showMessageDialog(this,
@@ -112,8 +116,8 @@ public class TerminalDashboard extends javax.swing.JFrame {
 
 	public static void main(final String args[]) {
     	
-    	final TerminalDashboard terminalDashboard=new TerminalDashboard();
-    	final TemperatureController temperatureController = new TemperatureController();
+		final TemperatureController temperatureController = new TemperatureController();
+    	final TerminalDashboard terminalDashboard=new TerminalDashboard(temperatureController);
     	double localTemperature ;
 
     	while (true) {

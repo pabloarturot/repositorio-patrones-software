@@ -38,6 +38,8 @@ public class UDPReceiver implements Receiver{
 
 	                listener.notifyUDPMsg(message);
 	                
+	                System.out.println("Mensaje"+message.getType()+" DESDE:"+message.getPort());
+	                
 	            } catch (final Exception ex) {
 	                System.out.println(ex);
 	            }

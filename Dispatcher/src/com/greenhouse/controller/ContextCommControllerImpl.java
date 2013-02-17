@@ -72,7 +72,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 
 	private void loadDispatchersInfo(final String dispatchersInfo) {
 
-		final String[] info = dispatchersInfo.split("}");
+		final String[] info = dispatchersInfo.split(":");
 
 		DispatcherInfoDTO dispatcherInfoDTO;
 		for (final String dispatcherInfo : info) {
@@ -143,6 +143,14 @@ public class ContextCommControllerImpl implements ContextCommController,
 			System.out.println(ex);
 		}
 	}
+	
+	public void propagateMessage(final Message message) {
+		try {
+			forwarderUDP.send(message, networkInfoDTO);
+		} catch (final IOException ex) {
+			System.out.println(ex);
+		}
+	}
 
 	public void sendMessage(final Message message,
 			final NetworkInfoDTO networkInfoDTO) {
@@ -178,17 +186,24 @@ public class ContextCommControllerImpl implements ContextCommController,
 		switch (message.getType()) {
 		case CHANGE_FREQUENCY:
 		case INFO_TEMPERATURE:
-			final NetworkInfoDTO networkInfoDTO = new NetworkInfoDTO();
-			networkInfoDTO.setFromHost(getHostName());
-			networkInfoDTO.setFromPort(getPortNumber());
 
-			if (dispatchers.size() > 0) {
-
-				for (final DispatcherInfoDTO dispatcherInfoDTO : dispatchers) {
-					networkInfoDTO.setToHost(dispatcherInfoDTO.getHost());
-					networkInfoDTO.setToPort(dispatcherInfoDTO.getPort());
-					sendMessage(message, networkInfoDTO);
-				}
+			if(!message.isToDispatcher()){
+				final NetworkInfoDTO networkInfoDTO = new NetworkInfoDTO();
+				networkInfoDTO.setFromHost(getHostName());
+				networkInfoDTO.setFromPort(getPortNumber());
+				
+				if (dispatchers.size() > 0) {
+					
+					for (final DispatcherInfoDTO dispatcherInfoDTO : dispatchers) {
+						networkInfoDTO.setToHost(dispatcherInfoDTO.getHost());
+						networkInfoDTO.setToPort(dispatcherInfoDTO.getPort());
+						message.setToDispatcher(true);
+						sendMessage(message, networkInfoDTO);
+					}
+				}	
+			}else{
+				message.setToDispatcher(false);
+				propagateMessage(message);
 			}
 			break;
 		case INIT_COMM:

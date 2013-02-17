@@ -10,6 +10,7 @@ public class MessageDTO implements Message{
 	    private double temperature;
 	    private long timestamp;
 	    private int frequency;
+	    private boolean toDispatcher;
 	    private MessageType type;
 	    
 
@@ -88,6 +89,14 @@ public class MessageDTO implements Message{
 		public void setFrequency(int frequency) {
 			this.frequency=frequency;
 			
+		}
+
+		public boolean isToDispatcher() {
+			return toDispatcher;
+		}
+
+		public void setToDispatcher(boolean toDispatcher) {
+			this.toDispatcher = toDispatcher;
 		}
 
 		@Override

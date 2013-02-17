@@ -23,14 +23,25 @@ public class UDPForwarder implements Forwarder{
 	        switch (message.getType()) {
 			case CHANGE_FREQUENCY:
 			case INFO_TEMPERATURE:
-				packet = new DatagramPacket(
-						byteArray,
-						byteArray.length,
-						InetAddress.getByName(networkInfoDTO.getmCastHost()),
-						networkInfoDTO.getmCastPort());
-				 MulticastSocket multicastSocket = new MulticastSocket(networkInfoDTO.getmCastPort());
-				 multicastSocket.send(packet);     
-			     multicastSocket.close();
+				if(message.isToDispatcher()){
+					packet = new DatagramPacket(
+			        		byteArray,
+			        		byteArray.length,
+			                InetAddress.getByName(networkInfoDTO.getToHost()),
+			                networkInfoDTO.getToPort());
+				 DatagramSocket datagramSocket = new DatagramSocket(5559);
+				 datagramSocket.send(packet);     
+				 datagramSocket.close();
+				}else{					
+					packet = new DatagramPacket(
+							byteArray,
+							byteArray.length,
+							InetAddress.getByName(networkInfoDTO.getmCastHost()),
+							networkInfoDTO.getmCastPort());
+					MulticastSocket multicastSocket = new MulticastSocket(networkInfoDTO.getmCastPort());
+					multicastSocket.send(packet);     
+					multicastSocket.close();
+				}
 				break;
 			case INIT_COMM:
 				 packet = new DatagramPacket(
@@ -38,14 +49,13 @@ public class UDPForwarder implements Forwarder{
 			        		byteArray.length,
 			                InetAddress.getByName(networkInfoDTO.getToHost()),
 			                networkInfoDTO.getToPort());
-				 DatagramSocket datagramSocket = new DatagramSocket(networkInfoDTO.getFromPort());
+				 DatagramSocket datagramSocket = new DatagramSocket(5559);
 				 datagramSocket.send(packet);     
 				 datagramSocket.close();
 				break;
-			}
+			}  
 	        
-	       
-	        
+	        System.out.println("Mensaje"+message.getType()+" DESDE:"+networkInfoDTO.getFromPort()+" HASTA:"+networkInfoDTO.getToPort());
 	       
 	    }
 }
