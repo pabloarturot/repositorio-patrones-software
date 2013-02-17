@@ -1,8 +1,0 @@
-package forwarder;
-
-import base.Message;
-
-public interface Forwarder {
-
-	 public void enviar(Message mensaje) throws IOException;
-}

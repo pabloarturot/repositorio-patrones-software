@@ -1,5 +1,0 @@
-package com.greenhouse.gui;
-
-public class FrameInicio extends javax.swing.JFrame{
-
-}
