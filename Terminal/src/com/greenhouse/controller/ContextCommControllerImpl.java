@@ -149,6 +149,7 @@ public class ContextCommControllerImpl implements ContextCommController, Control
     public void endMeeting() {
         try {
 			receiverUDP.end();
+			ipTables.clear();
 		} catch (IOException ex) {
 			System.out.println(ex);
 		}
