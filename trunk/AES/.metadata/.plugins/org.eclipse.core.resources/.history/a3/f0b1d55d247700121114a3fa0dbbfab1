@@ -1,0 +1,36 @@
+package com.greenhouse.util;
+
+import java.util.ResourceBundle;
+
+
+public class PropertyUtil {
+	
+	public static final String SERVER_PORT="SERVER_PORT";
+	public static final String SERVER_HOST ="SERVER_HOST";
+	public static final String CLIENT_PORT="CLIENT_PORT";
+	public static final String CLIENT_HOST="CLIENT_HOST";
+	public static ResourceBundle resources; 
+
+	public static void getBundle() {
+		resources = ResourceBundle.getBundle("conf");
+	}
+	
+	public static String getProp(String prop){
+		return resources.getString(prop);
+	}
+	
+	 @SuppressWarnings("unchecked")
+	public static <T extends Object> T getPropAs(String prop, Class<T> type){
+		 try{
+			 
+			 T propVal = (T) resources.getObject(prop);
+			 
+			 return propVal;
+			 
+		 }catch(ClassCastException ex){
+			 System.out.println("Invalid property Type");
+		 }
+		 
+		 return null;
+	}
+}

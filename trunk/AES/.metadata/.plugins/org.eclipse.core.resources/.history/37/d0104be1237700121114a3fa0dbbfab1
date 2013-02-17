@@ -1,0 +1,38 @@
+package com.greenhouse.forwader;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
+import com.greenhouse.base.Message;
+import com.greenhouse.util.MarshallingUtil;
+import com.greenhouse.util.PropertyUtil;
+
+
+public class UDPForwarder implements Forwarder{
+
+	 @Override
+	    public void enviar(Message message) throws IOException {
+	        
+		 	PropertyUtil.getBundle();
+		 	String clientHost = PropertyUtil.getProp(PropertyUtil.CLIENT_HOST);
+		 	String serverHost = PropertyUtil.getProp(PropertyUtil.SERVER_HOST);
+		 	Integer clientPort = PropertyUtil.getPropAs(PropertyUtil.CLIENT_PORT, clientPort);
+		 	Integer serverPort = PropertyUtil.getPropAs(PropertyUtil.SERVER_PORT, serverPort);
+	        
+	        byte[] byteArray = MarshallingUtil.toByteArray(message);
+	        
+	        DatagramSocket socket = new DatagramSocket(clientPort, InetAddress.getByName(clientHost));
+	        
+	        DatagramPacket packet = new DatagramPacket(
+	        		byteArray,
+	        		byteArray.length,
+	                InetAddress.getByName("localhost"),
+	                5001);
+	        
+	        socket.send(packet);
+	        socket.close();      
+	        
+	    }
+}

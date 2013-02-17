@@ -1,0 +1,58 @@
+package com.greenhouse.base;
+
+
+public class NetworkInfoDTO {
+
+	private String clientHost;
+ 	private String serverHost;
+ 	private Integer clientPort;
+ 	private Integer serverPort;
+ 	private String mCastHots;
+ 	
+ 	public NetworkInfoDTO() {
+		
+	}
+
+	public String getClientHost() {
+		return clientHost;
+	}
+
+	public void setClientHost(String clientHost) {
+		this.clientHost = clientHost;
+	}
+
+	public String getServerHost() {
+		return serverHost;
+	}
+
+	public void setServerHost(String serverHost) {
+		this.serverHost = serverHost;
+	}
+
+	public Integer getClientPort() {
+		return clientPort;
+	}
+
+	public void setClientPort(Integer clientPort) {
+		this.clientPort = clientPort;
+	}
+
+	public Integer getServerPort() {
+		return serverPort;
+	}
+
+	public void setServerPort(Integer serverPort) {
+		this.serverPort = serverPort;
+	}
+
+	public String getmCastHots() {
+		return mCastHots;
+	}
+
+	public void setmCastHots(String mCastHots) {
+		this.mCastHots = mCastHots;
+	}
+ 	
+ 	
+
+}

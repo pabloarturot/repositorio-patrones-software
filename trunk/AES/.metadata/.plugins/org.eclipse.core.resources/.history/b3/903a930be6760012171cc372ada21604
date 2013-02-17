@@ -1,0 +1,73 @@
+package com.greenhouse.sim;
+
+import java.util.List;
+
+import com.greenhouse.base.Message;
+import com.greenhouse.controller.ContextComControllerImpl;
+import com.greenhouse.controller.ContextCommunicationController;
+
+public class TemperatureController {
+	
+	 	private RemoteTemperatureInformer remoteInformer;
+	    private LocalTemperatureInformer localInformer;
+	    private ContextCommunicationController contextCommunication;
+	    private int frequencyInterval;
+
+	    public TemperatureController(){
+
+	        frequencyInterval=5;
+	        contextCommunication=new ContextComControllerImpl();
+	        contextCommunication.startMeeting();
+	        
+	        remoteInformer=new RemoteTemperatureInformer(contextCommunication);
+	        localInformer=new LocalTemperatureInformer(contextCommunication);
+	    }
+
+
+	     public List<Message> getTerminalsTemperatures() {
+
+	         List<Message> temperatures=remoteInformer.obtenerLecturasTerminales();
+	         getPreferredFrequency(temperatures);
+
+	         return temperatures;
+	     }
+
+	     public Message getLocalTemperature(){
+
+	    	 Message dto = localInformer.getLocalTemperature();
+	         localInformer.sendInfo(dto,frequencyInterval);
+	         return dto;
+	     }
+
+	    
+	    public int getFrequencyInterval() {
+	        return frequencyInterval;
+	    }
+	   
+	    public void setFrequencyInterval(int param) {
+
+	        if(param>0){
+	           frequencyInterval = param;           
+	        }
+	    }
+
+	    private void getPreferredFrequency(List<Message> temperatures){
+	        
+	        long timeStamp=0;
+
+	        for(Message dto : temperatures){
+
+	            long temp=dto.getTimestamp();
+
+	             if(temp>timeStamp){
+	                 timeStamp=temp;
+	                 setFrequencyInterval(dto.getFrequency());
+	             }
+	         }
+	    }
+
+	    public void closeTerminalsConn(){
+	        contextCommunication.endMeeting();
+	    }
+
+}

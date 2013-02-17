@@ -1,0 +1,62 @@
+package com.greenhouse.gui;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.ThermometerPlot;
+import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.general.DatasetGroup;
+import org.jfree.data.general.ValueDataset;
+
+public class ChartPanelHelper {
+
+	   public static ChartPanel getTermometroPlot(String leyenda,Double temperatura) {
+
+	        ValueDataset dataset = new ValueDataset() {
+				
+				@Override
+				public void setGroup(DatasetGroup arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void removeChangeListener(DatasetChangeListener arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public DatasetGroup getGroup() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+				
+				@Override
+				public void addChangeListener(DatasetChangeListener arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public Number getValue() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+			};
+			
+	        ThermometerPlot plot ;
+	        JFreeChart chart ;
+	        plot = new ThermometerPlot(dataset);
+	        chart = new JFreeChart(leyenda,JFreeChart.DEFAULT_TITLE_FONT,plot,false);
+
+	        plot.setThermometerStroke(new BasicStroke(2.0f));
+	        plot.setThermometerPaint(Color.lightGray);
+
+	        ChartPanel chartPanel = new ChartPanel(chart);
+	        return chartPanel;
+
+	    }
+}

@@ -1,0 +1,47 @@
+package com.greenhouse.sim;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.greenhouse.base.Message;
+import com.greenhouse.base.MessageImpl;
+import com.greenhouse.controller.ContextCommunicationController;
+
+public class RemoteTemperatureInformer {
+
+	private ContextCommunicationController contextCommunication;
+
+    public RemoteTemperatureInformer(ContextCommunicationController contextCommunication){
+        this.contextCommunication=contextCommunication;
+    }
+
+    public List<Message> obtenerLecturasTerminales() {
+
+        Map<String, Message> temperaturasMap = contextCommunication.receiveMessages();
+        Set<String> keysTemperaturas = temperaturasMap.keySet();
+
+        ArrayList<Message> lecturasTemp = new ArrayList<Message>();
+
+        for (String key : keysTemperaturas) {
+
+        	Message mensaje = temperaturasMap.get(key);
+
+            if (mensaje != null) {               
+               
+                String nombre = mensaje.getAlias();
+
+                if (nombre == null || (nombre.trim()).equals("")) {
+                    nombre=mensaje.getHostIp();
+                }
+
+                Message dto = new MessageImpl("",nombre,mensaje.getTemperature(),mensaje.getTimestamp(),mensaje.getFrequency());
+                lecturasTemp.add(dto);
+            }
+        }
+
+        return lecturasTemp;
+
+    }
+}

@@ -1,0 +1,14 @@
+package controller;
+
+import java.util.Map;
+
+public interface ContextCommunicationController {
+
+		public void saludar();
+	 
+	    public void enviarMensaje(Mensaje mensaje);
+	    
+	    public Map<String, Mensaje> recibirMensajes();
+	    
+	    public void finalizar();
+}

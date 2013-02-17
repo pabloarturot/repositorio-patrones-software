@@ -1,0 +1,5 @@
+package com.greenhouse.base;
+
+public class LecturaTemperaturaDTO {
+
+}

@@ -1,0 +1,10 @@
+package forwarder;
+
+import java.io.IOException;
+
+import base.Message;
+
+public interface Forwarder {
+
+	 public void enviar(Message mensaje) throws IOException;
+}

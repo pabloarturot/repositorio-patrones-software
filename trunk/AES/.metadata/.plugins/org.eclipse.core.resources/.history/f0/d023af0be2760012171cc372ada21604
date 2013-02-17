@@ -1,0 +1,10 @@
+package com.greenhouse.controller;
+
+import base.Message;
+
+public interface ControllerListener {
+
+    public void notifyTCPMsg(Message message);
+
+    public void notifyUDPMsg(Message message);
+}

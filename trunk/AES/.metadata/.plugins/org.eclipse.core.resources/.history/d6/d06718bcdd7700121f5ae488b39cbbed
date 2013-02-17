@@ -1,0 +1,11 @@
+package com.greenhouse.base;
+
+
+public class NetworkInfoDTO {
+
+	private String clientHost;
+ 	private String serverHost;
+ 	private Integer clientPort;
+ 	private Integer serverPort;
+
+}

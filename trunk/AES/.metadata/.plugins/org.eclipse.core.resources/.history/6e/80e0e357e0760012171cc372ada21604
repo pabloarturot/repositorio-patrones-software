@@ -1,0 +1,16 @@
+package controller;
+
+import java.util.Map;
+
+import base.Message;
+
+public interface ContextCommunicationController {
+
+		public void metting();
+	 
+	    public void sendMessage(Message message);
+	    
+	    public Map<String, Message> recibirMensajes();
+	    
+	    public void finalizar();
+}

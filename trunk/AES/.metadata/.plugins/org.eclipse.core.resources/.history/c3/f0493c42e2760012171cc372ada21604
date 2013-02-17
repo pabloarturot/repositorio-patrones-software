@@ -1,0 +1,5 @@
+package com.greenhouse.sim;
+
+public class Thermometer {
+
+}

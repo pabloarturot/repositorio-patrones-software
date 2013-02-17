@@ -1,0 +1,13 @@
+package com.greenhouse.util;
+
+import java.util.ResourceBundle;
+
+
+public class PropertiesUtil {
+	
+	ResourceBundle resources; 
+
+	public PropertiesUtil() {
+		resources = ResourceBundle.getBundle("conf");
+	}
+}
