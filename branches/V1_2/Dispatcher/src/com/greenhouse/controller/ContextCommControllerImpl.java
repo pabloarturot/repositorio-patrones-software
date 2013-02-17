@@ -1,10 +1,13 @@
 package com.greenhouse.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.greenhouse.base.DispatcherInfoDTO;
 import com.greenhouse.base.Message;
 import com.greenhouse.base.MessageDTO;
 import com.greenhouse.base.MessageType;
@@ -17,154 +20,184 @@ import com.greenhouse.reciver.UDPReceiver;
 import com.greenhouse.util.NetworkInfoUtil;
 import com.greenhouse.util.NetworkUtil;
 
+public class ContextCommControllerImpl implements ContextCommController,
+		ControllerListener {
 
-
-public class ContextCommControllerImpl implements ContextCommController, ControllerListener {
-	
 	private final Map<String, String> ipTables = new HashMap<String, String>();
-    private final Map<String, Message> messages = new HashMap<String, Message>();
-    private final Map<String, String> ipDispatchers = new HashMap<String, String>(); 
-    private Forwarder forwarderUDP;
-    private Receiver receiverUDP;
-    private Receiver receiveerMultiCast;
-    private String hostIp;
-    private String hostName;
-    NetworkInfoDTO networkInfoDTO;
+	private final Map<String, Message> messages = new HashMap<String, Message>();
+	private final List<DispatcherInfoDTO> dispatchers = new ArrayList<DispatcherInfoDTO>();
+	public static final String DISPATCHERS = "DISPATCHERS";
+	private Forwarder forwarderUDP;
+	private Receiver receiverUDP;
+	private Receiver receiveerMultiCast;
+	private String hostIp;
+	private String hostName;
+	private Integer portNumber;
+	NetworkInfoDTO networkInfoDTO;
 
-    public ContextCommControllerImpl() {
-        try {
-        	
-        	NetworkInfoUtil.getBundle();
-		 	
-		 	networkInfoDTO = new NetworkInfoDTO();
-		 	networkInfoDTO.setmCastHost(NetworkInfoUtil.getHost(NetworkInfoUtil.TERMINAL_HOST));
-		 	networkInfoDTO.setDispatcherHost(NetworkInfoUtil.getHost(NetworkInfoUtil.DISPATCHER_HOST));
-		 	networkInfoDTO.setmCastPort(NetworkInfoUtil.getPort(NetworkInfoUtil.TERMINAL_PORT));
-		 	networkInfoDTO.setDispatcherPort(NetworkInfoUtil.getPort(NetworkInfoUtil.DISPATCHER_PORT));
-		 	networkInfoDTO.setmCastHost(NetworkInfoUtil.getHost(NetworkInfoUtil.MCAST_ADDR));
-		 	networkInfoDTO.setmCastPort(NetworkInfoUtil.getPort(NetworkInfoUtil.MCAST_PORT));
-		 	
-		 	
-            hostName = NetworkInfoUtil.getHost(NetworkInfoUtil.TERMINAL_NAME);
+	public ContextCommControllerImpl() {
+		try {
 
-            
-            
-            
-            
-            hostIp = NetworkUtil.getHostIP();
+			NetworkInfoUtil.getBundle();
 
-            forwarderUDP = new UDPForwarder();
-            receiverUDP = new UDPReceiver(this, networkInfoDTO);
-            receiveerMultiCast = new MultiCastReceiver(this, networkInfoDTO);
-            
+			networkInfoDTO = new NetworkInfoDTO();
+			networkInfoDTO.setFromHost(NetworkInfoUtil
+					.getHost(NetworkInfoUtil.FROM_HOST));
+			networkInfoDTO.setFromPort(NetworkInfoUtil
+					.getPort(NetworkInfoUtil.FROM_PORT));
+			networkInfoDTO.setmCastHost(NetworkInfoUtil
+					.getHost(NetworkInfoUtil.MCAST_ADDR));
+			networkInfoDTO.setmCastPort(NetworkInfoUtil
+					.getPort(NetworkInfoUtil.MCAST_PORT));
 
-            initUPDListener();
-            initMultiCastListener();
-        } catch (final IOException ex) {
-            System.err.println(ex);
-            System.exit(-1);
-        }
-    }
- 
+			loadDispatchersInfo(NetworkInfoUtil.getHost(DISPATCHERS));
 
-    public String getHostIp() {
+			hostName = NetworkInfoUtil.getHost(NetworkInfoUtil.FROM_NAME);
+
+			hostIp = NetworkUtil.getHostIP();
+
+			portNumber = networkInfoDTO.getFromPort();
+
+			forwarderUDP = new UDPForwarder();
+			receiverUDP = new UDPReceiver(this, networkInfoDTO);
+			receiveerMultiCast = new MultiCastReceiver(this, networkInfoDTO);
+
+			initUPDListener();
+			initMultiCastListener();
+		} catch (final IOException ex) {
+			System.err.println(ex);
+			System.exit(-1);
+		}
+	}
+
+	private void loadDispatchersInfo(final String dispatchersInfo) {
+
+		final String[] info = dispatchersInfo.split("}");
+
+		DispatcherInfoDTO dispatcherInfoDTO;
+		for (final String dispatcherInfo : info) {
+			final String[] temp = dispatcherInfo.split(",");
+			dispatcherInfoDTO = new DispatcherInfoDTO();
+			dispatcherInfoDTO.setHost(temp[0]);
+			dispatcherInfoDTO.setName(temp[1]);
+			dispatcherInfoDTO.setPort(Integer.valueOf(temp[2]));
+			dispatchers.add(dispatcherInfoDTO);
+		}
+
+	}
+
+	public String getHostIp() {
 		return hostIp;
 	}
-    
-    public String getHostName() {
+
+	public String getHostName() {
 		return hostName;
 	}
-    
 
-    private void initUPDListener() {
-        final Thread udpListener = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                receiverUDP.receive();
-            }
-        });
-        udpListener.start();
-    }
-    
-    private void initMultiCastListener() {
-        final Thread initMultiCastListener = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-            	receiveerMultiCast.receive();
-            }
-        });
-        initMultiCastListener.start();
-    }
-  
-    @Override
-    public void startMeeting() {
-        try {
-            final Message Message = new MessageDTO(
-                    hostIp,
-                    hostName,
-                    0,
-                    new Date().getTime(),
-                    0, MessageType.INIT_COMM);
-            forwarderUDP.send(Message, networkInfoDTO);
-        } catch (final IOException ex) {
-            System.out.println(ex);
-        }
-    }
-
-    @Override
-    public void sendMessage(final Message message) {
-    	final Message send = new MessageDTO(
-    			hostIp,
-    			hostName,
-    			message.getTemperature(),
-    			new Date().getTime(),
-    			message.getFrequency(), message.getType());
-    	try {
-    		forwarderUDP.send(send, networkInfoDTO);
-    	} catch (final IOException ex) {
-    		System.out.println(ex);
-    	}
-    }
-    
-    public void sendMessage(final Message message, NetworkInfoDTO networkInfoDTO) {
-    	final Message send = new MessageDTO(
-    			hostIp,
-    			hostName,
-    			message.getTemperature(),
-    			new Date().getTime(),
-    			message.getFrequency(), message.getType());
-    	try {
-    		forwarderUDP.send(send, networkInfoDTO);
-    	} catch (final IOException ex) {
-    		System.out.println(ex);
-    	}
-    }
-    
-    @Override
-    public Map<String, Message> receiveMessages() {
-    	final Map<String, Message> mapRetorno = new HashMap<String, Message>();
-    	mapRetorno.putAll(messages);
-    	messages.clear();
-    	return mapRetorno;
-    }
-    
-    @Override
-    public void endMeeting() {
-        try {
-			receiverUDP.end();
-		} catch (IOException ex) {
-			System.out.println(ex);
-		}
-    }
-
-  
-	@Override
-	public void notifyUDPMsg(final Message message) {
-		ipTables.put(message.getHostIp(), message.getAlias());
-		messages.put(message.getHostIp(), message);
+	public Integer getPortNumber() {
+		return portNumber;
 	}
 
+	private void initUPDListener() {
+		final Thread udpListener = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				receiverUDP.receive();
+			}
+		});
+		udpListener.start();
+	}
+
+	private void initMultiCastListener() {
+		final Thread initMultiCastListener = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				receiveerMultiCast.receive();
+			}
+		});
+		initMultiCastListener.start();
+	}
+
+	@Override
+	public void startMeeting() {
+		try {
+			final Message Message = new MessageDTO(hostIp, hostName,
+					portNumber, 0, new Date().getTime(), 0,
+					MessageType.INIT_COMM);
+			forwarderUDP.send(Message, networkInfoDTO);
+		} catch (final IOException ex) {
+			System.out.println(ex);
+		}
+	}
+
+	@Override
+	public void sendMessage(final Message message) {
+		final Message send = new MessageDTO(hostIp, hostName, portNumber,
+				message.getTemperature(), new Date().getTime(),
+				message.getFrequency(), message.getType());
+		try {
+			forwarderUDP.send(send, networkInfoDTO);
+		} catch (final IOException ex) {
+			System.out.println(ex);
+		}
+	}
+
+	public void sendMessage(final Message message,
+			final NetworkInfoDTO networkInfoDTO) {
+		try {
+			forwarderUDP.send(message, networkInfoDTO);
+		} catch (final IOException ex) {
+			System.out.println(ex);
+		}
+	}
+
+	@Override
+	public Map<String, Message> receiveMessages() {
+		final Map<String, Message> mapRetorno = new HashMap<String, Message>();
+		mapRetorno.putAll(messages);
+		messages.clear();
+		return mapRetorno;
+	}
+
+	@Override
+	public void endMeeting() {
+		try {
+			receiverUDP.end();
+			ipTables.clear();
+			messages.clear();
+		} catch (final IOException ex) {
+			System.out.println(ex);
+		}
+	}
+
+	@Override
+	public void notifyUDPMsg(final Message message) {
+
+		switch (message.getType()) {
+		case CHANGE_FREQUENCY:
+		case INFO_TEMPERATURE:
+			final NetworkInfoDTO networkInfoDTO = new NetworkInfoDTO();
+			networkInfoDTO.setFromHost(getHostName());
+			networkInfoDTO.setFromPort(getPortNumber());
+
+			if (dispatchers.size() > 0) {
+
+				for (final DispatcherInfoDTO dispatcherInfoDTO : dispatchers) {
+					networkInfoDTO.setToHost(dispatcherInfoDTO.getHost());
+					networkInfoDTO.setToPort(dispatcherInfoDTO.getPort());
+					sendMessage(message, networkInfoDTO);
+				}
+			}
+			break;
+		case INIT_COMM:
+			ipTables.put(message.getAlias(), message.getHostIp());
+			break;
+		default:
+			break;
+		}
+
+	}
 
 }

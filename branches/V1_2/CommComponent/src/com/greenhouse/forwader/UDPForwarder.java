@@ -22,6 +22,7 @@ public class UDPForwarder implements Forwarder{
 	        
 	        switch (message.getType()) {
 			case CHANGE_FREQUENCY:
+			case INFO_TEMPERATURE:
 				packet = new DatagramPacket(
 						byteArray,
 						byteArray.length,
@@ -31,7 +32,6 @@ public class UDPForwarder implements Forwarder{
 				 multicastSocket.send(packet);     
 			     multicastSocket.close();
 				break;
-			case INFO_TEMPERATURE:
 			case INIT_COMM:
 				 packet = new DatagramPacket(
 			        		byteArray,

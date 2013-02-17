@@ -6,6 +6,7 @@ public class MessageDTO implements Message{
 	
 		private String hostIp;
 	    private String alias;
+	    private Integer port;
 	    private double temperature;
 	    private long timestamp;
 	    private int frequency;
@@ -17,9 +18,10 @@ public class MessageDTO implements Message{
 	        this.frequency = frequency;
 	    }
 
-	    public MessageDTO(final String hostIp, final String alias, final double temperature, final long timestamp, final int frequency, final MessageType type) {
+	    public MessageDTO(final String hostIp, final String alias, final Integer port, final double temperature, final long timestamp, final int frequency, final MessageType type) {
 	        this.hostIp = hostIp;
 	        this.alias = alias;
+	        this.port = port;
 	        this.temperature = temperature;
 	        this.timestamp = timestamp;
 	        this.frequency = frequency;
@@ -44,6 +46,14 @@ public class MessageDTO implements Message{
 
 		public void setAlias(String alias) {
 			this.alias = alias;
+		}
+
+		public Integer getPort() {
+			return port;
+		}
+
+		public void setPort(Integer port) {
+			this.port = port;
 		}
 
 		public long getTimestamp() {
