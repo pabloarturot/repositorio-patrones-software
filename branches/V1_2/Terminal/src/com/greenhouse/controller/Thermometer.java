@@ -1,4 +1,4 @@
-package com.greenhouse.sim;
+package com.greenhouse.controller;
 
 import java.util.Random;
 
