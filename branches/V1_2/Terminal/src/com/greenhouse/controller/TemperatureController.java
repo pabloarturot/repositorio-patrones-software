@@ -37,7 +37,7 @@ public class TemperatureController {
 
 			Message message = temperaturesMap.get(key);
 
-			if (message != null&& lecturasTemp.contains(message)
+			if (message != null&& !lecturasTemp.contains(message)
 					&& message.getType() == MessageType.INFO_TEMPERATURE) {
 
 				String name = message.getAlias();
