@@ -194,14 +194,13 @@ public class ContextCommControllerImpl implements ContextCommController,
 						for (final DispatcherInfoDTO dispatcherInfoDTO : dispatchers) {
 							networkInfoDTO.setToHost(dispatcherInfoDTO.getHost());
 							networkInfoDTO.setToPort(dispatcherInfoDTO.getPort());
-							message.setToDispatcher(true);
+							message.setToDispatcher(false);
 							sendMessage(message, networkInfoDTO);
 						}
 					}
 					
 				}else{
-					
-					message.setToDispatcher(false);
+				
 					propagateMessage(message);					
 				}
 				break;
