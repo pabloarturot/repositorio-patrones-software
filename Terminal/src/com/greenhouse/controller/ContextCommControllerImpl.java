@@ -114,11 +114,12 @@ public class ContextCommControllerImpl implements ContextCommController,
 
 	@Override
 	public void sendMessage(final Message message) {
-		final Message send = new MessageDTO(hostIp, hostName, portNumber,
-				message.getTemperature(), new Date().getTime(),
-				message.getFrequency(), message.getType());
+		message.setHostIp(hostIp);
+		message.setAlias(hostName);
+		message.setPort(portNumber);
+		
 		try {
-			forwarderUDP.send(send, networkInfoDTO);
+			forwarderUDP.send(message, networkInfoDTO);
 		} catch (final IOException ex) {
 			System.out.println(ex);
 		}

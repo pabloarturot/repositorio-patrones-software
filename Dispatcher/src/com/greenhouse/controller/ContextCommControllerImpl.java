@@ -14,7 +14,6 @@ import com.greenhouse.base.MessageType;
 import com.greenhouse.base.NetworkInfoDTO;
 import com.greenhouse.forwader.Forwarder;
 import com.greenhouse.forwader.UDPForwarder;
-import com.greenhouse.reciver.MultiCastReceiver;
 import com.greenhouse.reciver.Receiver;
 import com.greenhouse.reciver.UDPReceiver;
 import com.greenhouse.util.NetworkInfoUtil;
@@ -29,7 +28,6 @@ public class ContextCommControllerImpl implements ContextCommController,
 	public static final String DISPATCHERS = "DISPATCHERS";
 	private Forwarder forwarderUDP;
 	private Receiver receiverUDP;
-	private Receiver receiveerMultiCast;
 	private String hostIp;
 	private String hostName;
 	private Integer portNumber;
@@ -60,10 +58,8 @@ public class ContextCommControllerImpl implements ContextCommController,
 
 			forwarderUDP = new UDPForwarder();
 			receiverUDP = new UDPReceiver(this, networkInfoDTO);
-			receiveerMultiCast = new MultiCastReceiver(this, networkInfoDTO);
 
 			initUPDListener();
-			initMultiCastListener();
 		} catch (final IOException ex) {
 			System.err.println(ex);
 			System.exit(-1);
@@ -109,17 +105,6 @@ public class ContextCommControllerImpl implements ContextCommController,
 		udpListener.start();
 	}
 
-	private void initMultiCastListener() {
-		final Thread initMultiCastListener = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				receiveerMultiCast.receive();
-			}
-		});
-		initMultiCastListener.start();
-	}
-
 	@Override
 	public void startMeeting() {
 		try {
@@ -134,19 +119,21 @@ public class ContextCommControllerImpl implements ContextCommController,
 
 	@Override
 	public void sendMessage(final Message message) {
-		final Message send = new MessageDTO(hostIp, hostName, portNumber,
-				message.getTemperature(), new Date().getTime(),
-				message.getFrequency(), message.getType());
+		message.setHostIp(hostIp);
+		message.setAlias(hostName);
+		message.setPort(portNumber);
+		message.setTimestamp(new Date().getTime());
+
 		try {
-			forwarderUDP.send(send, networkInfoDTO);
+			forwarderUDP.send(message, networkInfoDTO);
 		} catch (final IOException ex) {
 			System.out.println(ex);
 		}
 	}
-	
+
 	public void propagateMessage(final Message message) {
 		try {
-			forwarderUDP.send(message, networkInfoDTO);
+			forwarderUDP.sendBroadCast(message, networkInfoDTO);
 		} catch (final IOException ex) {
 			System.out.println(ex);
 		}
@@ -161,8 +148,6 @@ public class ContextCommControllerImpl implements ContextCommController,
 		}
 	}
 
-	
-
 	@Override
 	public void endMeeting() {
 		try {
@@ -176,32 +161,33 @@ public class ContextCommControllerImpl implements ContextCommController,
 
 	@Override
 	public void notifyUDPMsg(final Message message) {
-		
-		
-		if(!messages.containsKey(message.getTimestamp())){
-			
+
+		if (!messages.containsKey(message.getTimestamp())) {
+
 			switch (message.getType()) {
 			case CHANGE_FREQUENCY:
 			case INFO_TEMPERATURE:
-				
-				if(message.isToDispatcher()){
+
+				propagateMessage(message);
+
+				if (message.isToDispatcher()) {
+
 					final NetworkInfoDTO networkInfoDTO = new NetworkInfoDTO();
 					networkInfoDTO.setFromHost(getHostName());
 					networkInfoDTO.setFromPort(getPortNumber());
-					
+
 					if (dispatchers.size() > 0) {
-						
+
 						for (final DispatcherInfoDTO dispatcherInfoDTO : dispatchers) {
-							networkInfoDTO.setToHost(dispatcherInfoDTO.getHost());
-							networkInfoDTO.setToPort(dispatcherInfoDTO.getPort());
+							networkInfoDTO.setToHost(dispatcherInfoDTO
+									.getHost());
+							networkInfoDTO.setToPort(dispatcherInfoDTO
+									.getPort());
 							message.setToDispatcher(false);
 							sendMessage(message, networkInfoDTO);
 						}
 					}
-					
-				}else{
-				
-					propagateMessage(message);					
+
 				}
 				break;
 			case INIT_COMM:
@@ -211,7 +197,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 				break;
 			}
 		}
-		
+
 		messages.put(message.getTimestamp(), message);
 
 	}
