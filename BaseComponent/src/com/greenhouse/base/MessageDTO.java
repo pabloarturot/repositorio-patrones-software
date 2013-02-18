@@ -125,7 +125,7 @@ public class MessageDTO implements Message{
 	    @Override
 	    public int hashCode() {
 	        int hash = 7;
-	        hash = 29 * hash + (this.alias != null ? this.alias.hashCode() : 0);
+	        hash = 29 * hash + new Long(this.timestamp).intValue();
 	        return hash;
 	    }
 }
