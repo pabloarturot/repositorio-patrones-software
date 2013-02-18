@@ -5,7 +5,6 @@ import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -29,12 +28,8 @@ public class TerminalDashboard extends javax.swing.JFrame {
 	private final JTextField updateFrequencyTextField;
 
 	private final JTable terminalsInfoTable;
-	
-	TemperatureController temperatureController;
 
-	public TerminalDashboard(TemperatureController temperatureController) {
-		
-		this.temperatureController = temperatureController;
+	public TerminalDashboard() {
 
 		this.setLayout(null);
 		this.setSize(810, 400);
@@ -43,10 +38,10 @@ public class TerminalDashboard extends javax.swing.JFrame {
 		leftPanel = new JPanel();
 		leftPanel.setLayout(null);
 		leftPanel.setBounds(0, 0, 410, 400);
-		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-
+	
 		final GridLayout formLayout = new GridLayout(2, 2);
 		final JPanel formJPanel = new JPanel(formLayout);
+		formJPanel.setBounds(0, 0, 410, 60);
 
 		updateFrequencyTextField = new JTextField("");
 		updateFrequencyTextField.setVisible(true);
@@ -74,15 +69,12 @@ public class TerminalDashboard extends javax.swing.JFrame {
 		rightPanel.setBounds(400, 0, 400, 400);
 		rightPanel.setLayout(null);
 
-		final JPanel tableJPanel = new JPanel();
-		tableJPanel.setLayout(new GridLayout(2, 0));
-
 		terminalsInfoTable = new JTable();
+		terminalsInfoTable.setBounds(0, 70, 410, 300);
 		terminalsInfoTable.getTableHeader().setReorderingAllowed(false);
-		tableJPanel.add(terminalsInfoTable);
-
-		leftPanel.add(tableJPanel);
-
+		
+		leftPanel.add(terminalsInfoTable);
+		
 		this.add(leftPanel, BorderLayout.WEST);
 		this.add(rightPanel, BorderLayout.EAST);
 
@@ -100,7 +92,7 @@ public class TerminalDashboard extends javax.swing.JFrame {
 	private void jButton1ActionPerformed(final java.awt.event.ActionEvent evt) {
 
 		try {
-			temperatureController.changeTerminalsFrequency(new Integer(updateFrequencyTextField.getText()));
+			new Integer(updateFrequencyTextField.getText());
 
 		} catch (final NumberFormatException nfex) {
 			JOptionPane.showMessageDialog(this,
@@ -116,8 +108,8 @@ public class TerminalDashboard extends javax.swing.JFrame {
 
 	public static void main(final String args[]) {
     	
-		final TemperatureController temperatureController = new TemperatureController();
-    	final TerminalDashboard terminalDashboard=new TerminalDashboard(temperatureController);
+    	final TerminalDashboard terminalDashboard=new TerminalDashboard();
+    	final TemperatureController temperatureController = new TemperatureController();
     	double localTemperature ;
 
     	while (true) {
