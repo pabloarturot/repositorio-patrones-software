@@ -21,6 +21,15 @@ public class TemperatureController {
 		contextCommunication.startMeeting();
 
 	}
+	
+	public String getTitle(){
+		if(contextCommunication!=null){
+			return contextCommunication.getHostName();
+		}else{
+			return "";
+		}
+		
+	}
 
 	public List<Message> getTerminalsTemperatures() {
 
