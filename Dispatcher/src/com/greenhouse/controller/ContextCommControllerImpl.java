@@ -24,7 +24,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 		ControllerListener {
 
 	private final Map<String, String> ipTables = new HashMap<String, String>();
-	private final Map<String, Message> messages = new HashMap<String, Message>();
+	private final Map<Long, Message> messages = new HashMap<Long, Message>();
 	private final List<DispatcherInfoDTO> dispatchers = new ArrayList<DispatcherInfoDTO>();
 	public static final String DISPATCHERS = "DISPATCHERS";
 	private Forwarder forwarderUDP;
@@ -161,13 +161,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 		}
 	}
 
-	@Override
-	public Map<String, Message> receiveMessages() {
-		final Map<String, Message> mapRetorno = new HashMap<String, Message>();
-		mapRetorno.putAll(messages);
-		messages.clear();
-		return mapRetorno;
-	}
+	
 
 	@Override
 	public void endMeeting() {
@@ -182,37 +176,50 @@ public class ContextCommControllerImpl implements ContextCommController,
 
 	@Override
 	public void notifyUDPMsg(final Message message) {
-
-		switch (message.getType()) {
-		case CHANGE_FREQUENCY:
-		case INFO_TEMPERATURE:
-
-			if(!message.isToDispatcher()){
-				final NetworkInfoDTO networkInfoDTO = new NetworkInfoDTO();
-				networkInfoDTO.setFromHost(getHostName());
-				networkInfoDTO.setFromPort(getPortNumber());
+		
+		
+		if(!messages.containsKey(message.getTimestamp())){
+			
+			switch (message.getType()) {
+			case CHANGE_FREQUENCY:
+			case INFO_TEMPERATURE:
 				
-				if (dispatchers.size() > 0) {
+				if(message.isToDispatcher()){
+					final NetworkInfoDTO networkInfoDTO = new NetworkInfoDTO();
+					networkInfoDTO.setFromHost(getHostName());
+					networkInfoDTO.setFromPort(getPortNumber());
 					
-					for (final DispatcherInfoDTO dispatcherInfoDTO : dispatchers) {
-						networkInfoDTO.setToHost(dispatcherInfoDTO.getHost());
-						networkInfoDTO.setToPort(dispatcherInfoDTO.getPort());
-						message.setToDispatcher(true);
-						sendMessage(message, networkInfoDTO);
+					if (dispatchers.size() > 0) {
+						
+						for (final DispatcherInfoDTO dispatcherInfoDTO : dispatchers) {
+							networkInfoDTO.setToHost(dispatcherInfoDTO.getHost());
+							networkInfoDTO.setToPort(dispatcherInfoDTO.getPort());
+							message.setToDispatcher(true);
+							sendMessage(message, networkInfoDTO);
+						}
 					}
-				}	
-			}else{
-				message.setToDispatcher(false);
-				propagateMessage(message);
+					
+				}else{
+					
+					message.setToDispatcher(false);
+					propagateMessage(message);					
+				}
+				break;
+			case INIT_COMM:
+				ipTables.put(message.getAlias(), message.getHostIp());
+				break;
+			default:
+				break;
 			}
-			break;
-		case INIT_COMM:
-			ipTables.put(message.getAlias(), message.getHostIp());
-			break;
-		default:
-			break;
 		}
+		
+		messages.put(message.getTimestamp(), message);
 
+	}
+
+	@Override
+	public Map<String, Message> receiveMessages() {
+		return null;
 	}
 
 }

@@ -24,7 +24,7 @@ public class UDPForwarder implements Forwarder{
 			case CHANGE_FREQUENCY:
 			case INFO_TEMPERATURE:
 				if(message.isToDispatcher()){
-					packet = new DatagramPacket(
+				packet = new DatagramPacket(
 			        		byteArray,
 			        		byteArray.length,
 			                InetAddress.getByName(networkInfoDTO.getToHost()),
@@ -55,7 +55,11 @@ public class UDPForwarder implements Forwarder{
 				break;
 			}  
 	        
-	        System.out.println("Mensaje"+message.getType()+" DESDE:"+networkInfoDTO.getFromPort()+" HASTA:"+networkInfoDTO.getToPort());
+	        if(!message.isToDispatcher()){
+	        	System.out.println("Envio Mensaje Broadcast "+message.getType()+": DESDE:"+networkInfoDTO.getFromHost()+" HASTA:"+networkInfoDTO.getmCastPort());
+	        }else{
+	        	System.out.println("Envio Mensaje "+message.getType()+": DESDE:"+networkInfoDTO.getFromHost()+" HASTA:"+networkInfoDTO.getToHost());	        	
+	        }
 	       
 	    }
 }
