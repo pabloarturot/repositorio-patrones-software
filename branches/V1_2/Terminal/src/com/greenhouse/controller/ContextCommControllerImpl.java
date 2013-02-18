@@ -20,7 +20,7 @@ import com.greenhouse.util.NetworkUtil;
 public class ContextCommControllerImpl implements ContextCommController,
 		ControllerListener {
 
-	private final Map<String, Message> messages = new HashMap<String, Message>();
+	private final Map<Long, Message> messages = new HashMap<Long, Message>();
 	private Forwarder forwarderUDP;
 	private Receiver receiverUDP;
 	private Receiver receiveerMultiCast;
@@ -136,8 +136,8 @@ public class ContextCommControllerImpl implements ContextCommController,
 	}
 
 	@Override
-	public Map<String, Message> receiveMessages() {
-		final Map<String, Message> mapRetorno = new HashMap<String, Message>();
+	public Map<Long, Message> receiveMessages() {
+		final Map<Long, Message> mapRetorno = new HashMap<Long, Message>();
 		mapRetorno.putAll(messages);
 		messages.clear();
 		return mapRetorno;
@@ -155,7 +155,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 
 	@Override
 	public void notifyUDPMsg(final Message message) {
-		messages.put(message.getAlias(), message);
+		messages.put(message.getTimestamp(), message);
 	}
 
 }

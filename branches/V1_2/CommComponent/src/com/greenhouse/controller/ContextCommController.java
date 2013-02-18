@@ -12,7 +12,7 @@ public interface ContextCommController {
 	 
 	    public void sendMessage(Message message);
 	    
-	    public Map<String, Message> receiveMessages();
+	    public Map<Long, Message> receiveMessages();
 	    
 	    public void endMeeting();
 	    

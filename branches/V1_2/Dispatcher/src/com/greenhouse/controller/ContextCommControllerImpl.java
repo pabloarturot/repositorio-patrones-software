@@ -203,8 +203,11 @@ public class ContextCommControllerImpl implements ContextCommController,
 	}
 
 	@Override
-	public Map<String, Message> receiveMessages() {
-		return null;
+	public Map<Long, Message> receiveMessages() {
+		final Map<Long, Message> mapRetorno = new HashMap<Long, Message>();
+		mapRetorno.putAll(messages);
+		messages.clear();
+		return mapRetorno;
 	}
 
 }
