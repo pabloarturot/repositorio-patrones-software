@@ -24,16 +24,16 @@ public class TemperatureController {
 
 	public List<Message> getTerminalsTemperatures() {
 
-		Map<String, Message> temperaturesMap = contextCommunication
+		Map<Long, Message> temperaturesMap = contextCommunication
 				.receiveMessages();
-		Set<String> temperatures = temperaturesMap.keySet();
+		Set<Long> temperatures = temperaturesMap.keySet();
 
 		long timeStamp = 0;
 		long temp;
 
 		ArrayList<Message> lecturasTemp = new ArrayList<Message>();
 
-		for (String key : temperatures) {
+		for (Long key : temperatures) {
 
 			Message message = temperaturesMap.get(key);
 
