@@ -108,6 +108,7 @@ public class TerminalDashboard extends javax.swing.JFrame {
 	}
 
 	protected void windowClosed() {
+		temperatureController.closeTerminalConn();
 		System.exit(0);
 	}
 
