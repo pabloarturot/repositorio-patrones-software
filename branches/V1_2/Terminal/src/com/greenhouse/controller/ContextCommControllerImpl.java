@@ -51,6 +51,8 @@ public class ContextCommControllerImpl implements ContextCommController,
 			hostName = NetworkInfoUtil.getHost(NetworkInfoUtil.FROM_NAME);
 
 			hostIp = NetworkUtil.getHostIP();
+			
+			portNumber = networkInfoDTO.getFromPort();
 
 			forwarderUDP = new UDPForwarder();
 			receiverUDP = new UDPReceiver(this, networkInfoDTO);
