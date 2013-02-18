@@ -68,6 +68,7 @@ public class TemperatureController {
 		Message message = new MessageDTO();
 		message.setFrequency(frequency);
 		message.setType(MessageType.CHANGE_FREQUENCY);
+		message.setToDispatcher(true);
 		message.setTemperature(getLocalTemperature());
 
 		contextCommunication.sendMessage(message);
@@ -81,6 +82,7 @@ public class TemperatureController {
 		Message message = new MessageDTO();
 		message.setFrequency(getFrequencyInterval());
 		message.setTemperature(temperature);
+		message.setToDispatcher(true);
 		message.setType(MessageType.INFO_TEMPERATURE);
 
 		contextCommunication.sendMessage(message);
