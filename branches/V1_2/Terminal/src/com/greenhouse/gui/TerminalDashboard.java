@@ -118,6 +118,8 @@ public class TerminalDashboard extends javax.swing.JFrame {
     	final TerminalDashboard terminalDashboard=new TerminalDashboard(temperatureController);
     	double localTemperature ;
 
+    	terminalDashboard.setTitle(temperatureController.getTitle());
+    	
     	while (true) {
     		
     		localTemperature = temperatureController.getLocalTemperature();
