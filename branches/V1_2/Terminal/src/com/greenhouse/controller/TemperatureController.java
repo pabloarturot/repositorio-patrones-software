@@ -37,32 +37,27 @@ public class TemperatureController {
 
 			Message message = temperaturesMap.get(key);
 
-			temp = message.getTimestamp();
+			if (message != null&& lecturasTemp.contains(message)
+					&& message.getType() == MessageType.INFO_TEMPERATURE) {
 
-			if (temp > timeStamp) {
-				
-				timeStamp = temp;
-				
-				if (message != null
-						&& message.getType() == MessageType.INFO_TEMPERATURE) {
+				String name = message.getAlias();
 
-					String name = message.getAlias();
-
-					if (name == null || (name.trim()).equals("")) {
-						name = message.getHostIp();
-					}
-
-					message.setAlias(name);
-
-					lecturasTemp.add(message);
-				} else if (message.getType() == MessageType.CHANGE_FREQUENCY) {
-
-					setFrequencyInterval(message.getFrequency());
-
+				if (name == null || (name.trim()).equals("")) {
+					name = message.getHostIp();
 				}
 
-			}
+				message.setAlias(name);
 
+				lecturasTemp.add(message);
+			} else if (message.getType() == MessageType.CHANGE_FREQUENCY) {
+
+				temp = message.getTimestamp();
+
+				if (temp > timeStamp) {
+					timeStamp = temp;
+					setFrequencyInterval(message.getFrequency());
+				}
+			}
 		}
 
 		return lecturasTemp;
@@ -81,7 +76,7 @@ public class TemperatureController {
 	}
 
 	public double getLocalTemperature() {
-
+		
 		double temperature = Thermometer.getTemperature();
 
 		Message message = new MessageDTO();
@@ -91,7 +86,7 @@ public class TemperatureController {
 		message.setType(MessageType.INFO_TEMPERATURE);
 
 		contextCommunication.sendMessage(message);
-
+		
 		return temperature;
 	}
 
