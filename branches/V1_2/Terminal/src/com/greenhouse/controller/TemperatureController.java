@@ -1,7 +1,6 @@
 package com.greenhouse.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,7 +82,6 @@ public class TemperatureController {
 		Message message = new MessageDTO();
 		message.setFrequency(getFrequencyInterval());
 		message.setTemperature(temperature);
-		message.setTimestamp(new Date().getTime());
 		message.setToDispatcher(true);
 		message.setType(MessageType.INFO_TEMPERATURE);
 

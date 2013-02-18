@@ -117,6 +117,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 		message.setHostIp(hostIp);
 		message.setAlias(hostName);
 		message.setPort(portNumber);
+		message.setTimestamp(new Date().getTime());
 		
 		try {
 			forwarderUDP.send(message, networkInfoDTO);
