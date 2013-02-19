@@ -8,7 +8,7 @@ import com.greenhouse.base.NetworkInfoDTO;
 
 public interface Forwarder {
 
-	 public void send(Message mensaje, NetworkInfoDTO networkInfoDTO) throws IOException;
+	 public void send(Message message, NetworkInfoDTO networkInfoDTO) throws IOException;
 	 
 	 public void sendBroadCast(Message message, NetworkInfoDTO networkInfoDTO)throws IOException;
 }

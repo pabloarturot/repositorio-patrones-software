@@ -10,9 +10,11 @@ import com.greenhouse.base.MessageDTO;
 import com.greenhouse.base.MessageType;
 import com.greenhouse.base.NetworkInfoDTO;
 import com.greenhouse.forwader.Forwarder;
+import com.greenhouse.forwader.TCPForwarder;
 import com.greenhouse.forwader.UDPForwarder;
 import com.greenhouse.reciver.MultiCastReceiver;
 import com.greenhouse.reciver.Receiver;
+import com.greenhouse.reciver.TCPReceiver;
 import com.greenhouse.reciver.UDPReceiver;
 import com.greenhouse.util.NetworkInfoUtil;
 import com.greenhouse.util.NetworkUtil;
@@ -21,9 +23,9 @@ public class ContextCommControllerImpl implements ContextCommController,
 		ControllerListener {
 
 	private final Map<Long, Message> messages = new HashMap<Long, Message>();
-	private Forwarder forwarderUDP;
-	private Receiver receiverUDP;
-	private Receiver receiveerMultiCast;
+	private Forwarder forwarder;
+	private Receiver receiver;
+	private Receiver receiverMultiCast;
 	private String hostIp;
 	private String hostName;
 	private Integer portNumber;
@@ -53,12 +55,26 @@ public class ContextCommControllerImpl implements ContextCommController,
 			hostIp = NetworkUtil.getHostIP();
 			
 			portNumber = networkInfoDTO.getFromPort();
+			
+			receiverMultiCast = new MultiCastReceiver(this, networkInfoDTO);
 
-			forwarderUDP = new UDPForwarder();
-			receiverUDP = new UDPReceiver(this, networkInfoDTO);
-			receiveerMultiCast = new MultiCastReceiver(this, networkInfoDTO);
+			switch (NetworkInfoUtil.getMode()) {
+			case TCP:
+				forwarder = new TCPForwarder();
+				receiver = new TCPReceiver(this, networkInfoDTO);				
+				break;
+			case UDP:
+				forwarder = new UDPForwarder();
+				receiver = new UDPReceiver(this, networkInfoDTO);			
+				break;
+			default:
+				forwarder = new UDPForwarder();
+				receiver = new UDPReceiver(this, networkInfoDTO);	
+				break;
+			}
 
-			initUPDListener();
+
+			initCommListener();
 			initMultiCastListener();
 		} catch (final IOException ex) {
 			System.err.println(ex);
@@ -78,15 +94,15 @@ public class ContextCommControllerImpl implements ContextCommController,
 		return portNumber;
 	}
 
-	private void initUPDListener() {
-		final Thread udpListener = new Thread(new Runnable() {
+	public void initCommListener() {
+		final Thread initCommListener = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				receiverUDP.receive();
+				receiver.receive();
 			}
 		});
-		udpListener.start();
+		initCommListener.start();
 	}
 
 	private void initMultiCastListener() {
@@ -94,7 +110,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 
 			@Override
 			public void run() {
-				receiveerMultiCast.receive();
+				receiverMultiCast.receive();
 			}
 		});
 		initMultiCastListener.start();
@@ -106,7 +122,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 			final Message Message = new MessageDTO(hostIp, hostName,
 					portNumber, 0, new Date().getTime(), 0,
 					MessageType.INIT_COMM);
-			forwarderUDP.send(Message, networkInfoDTO);
+			forwarder.send(Message, networkInfoDTO);
 		} catch (final IOException ex) {
 			System.out.println(ex);
 		}
@@ -120,7 +136,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 		message.setTimestamp(new Date().getTime());
 		
 		try {
-			forwarderUDP.send(message, networkInfoDTO);
+			forwarder.send(message, networkInfoDTO);
 		} catch (final IOException ex) {
 			System.out.println(ex);
 		}
@@ -129,7 +145,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 	public void sendMessage(final Message message,
 			final NetworkInfoDTO networkInfoDTO) {
 		try {
-			forwarderUDP.send(message, networkInfoDTO);
+			forwarder.send(message, networkInfoDTO);
 		} catch (final IOException ex) {
 			System.out.println(ex);
 		}
@@ -146,7 +162,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 	@Override
 	public void endMeeting() {
 		try {
-			receiverUDP.end();
+			receiver.end();
 			messages.clear();
 		} catch (final IOException ex) {
 			System.out.println(ex);
@@ -154,7 +170,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 	}
 
 	@Override
-	public void notifyUDPMsg(final Message message) {
+	public void notifyMsg(final Message message) {
 		messages.put(message.getTimestamp(), message);
 	}
 

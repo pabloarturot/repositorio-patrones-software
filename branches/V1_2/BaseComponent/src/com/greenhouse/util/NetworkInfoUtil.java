@@ -2,6 +2,8 @@ package com.greenhouse.util;
 
 import java.util.ResourceBundle;
 
+import com.greenhouse.base.CommMode;
+
 
 public class NetworkInfoUtil {
 	
@@ -12,6 +14,7 @@ public class NetworkInfoUtil {
 	public static final String FROM_NAME = "FROM_NAME"; 
 	public static final String MCAST_ADDR="MCAST_ADDR";
 	public static final String MCAST_PORT="MCAST_PORT";
+	public static final String MODE="MODE";
 	
 	public static ResourceBundle resources; 
 
@@ -26,6 +29,16 @@ public class NetworkInfoUtil {
 	
 	public static String getHost(String prop){
 		return resources.getString(prop);
+	}
+	
+	public static CommMode getMode(){
+		if(resources==null)
+			return CommMode.UDP;
+		try {
+			return CommMode.values()[Integer.valueOf(resources.getString(MODE))];
+		} catch (NumberFormatException e) {
+			return CommMode.UDP;
+		}
 	}
 
 }
