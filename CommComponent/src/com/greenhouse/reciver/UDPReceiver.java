@@ -36,7 +36,7 @@ public class UDPReceiver implements Receiver{
 
 	                Message message = MarshallingUtil.fromByteArray(packet.getData());
 
-	                listener.notifyUDPMsg(message);
+	                listener.notifyMsg(message);
 	                
 	                System.out.println("Recepcion Mensaje "+message.getType()+": DESDE:"+message.getPort()+" "+message.getHostIp());
 	                

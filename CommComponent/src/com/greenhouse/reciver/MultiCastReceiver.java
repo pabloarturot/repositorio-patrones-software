@@ -38,7 +38,7 @@ public class MultiCastReceiver implements Receiver{
 
 	                Message message = MarshallingUtil.fromByteArray(packet.getData());
 
-	                listener.notifyUDPMsg(message);
+	                listener.notifyMsg(message);
 	                
 	            } catch (final Exception ex) {
 	                System.out.println(ex);

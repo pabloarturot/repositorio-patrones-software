@@ -13,8 +13,10 @@ import com.greenhouse.base.MessageDTO;
 import com.greenhouse.base.MessageType;
 import com.greenhouse.base.NetworkInfoDTO;
 import com.greenhouse.forwader.Forwarder;
+import com.greenhouse.forwader.TCPForwarder;
 import com.greenhouse.forwader.UDPForwarder;
 import com.greenhouse.reciver.Receiver;
+import com.greenhouse.reciver.TCPReceiver;
 import com.greenhouse.reciver.UDPReceiver;
 import com.greenhouse.util.NetworkInfoUtil;
 import com.greenhouse.util.NetworkUtil;
@@ -26,8 +28,8 @@ public class ContextCommControllerImpl implements ContextCommController,
 	private final Map<Long, Message> messages = new HashMap<Long, Message>();
 	private final List<DispatcherInfoDTO> dispatchers = new ArrayList<DispatcherInfoDTO>();
 	public static final String DISPATCHERS = "DISPATCHERS";
-	private Forwarder forwarderUDP;
-	private Receiver receiverUDP;
+	private Forwarder forwarder;
+	private Receiver receiver;
 	private String hostIp;
 	private String hostName;
 	private Integer portNumber;
@@ -55,11 +57,24 @@ public class ContextCommControllerImpl implements ContextCommController,
 			hostIp = NetworkUtil.getHostIP();
 
 			portNumber = networkInfoDTO.getFromPort();
+			
+			switch (NetworkInfoUtil.getMode()) {
+			case TCP:
+				forwarder = new TCPForwarder();
+				receiver = new TCPReceiver(this, networkInfoDTO);				
+				break;
+			case UDP:
+				forwarder = new UDPForwarder();
+				receiver = new UDPReceiver(this, networkInfoDTO);			
+				break;
+			default:
+				forwarder = new UDPForwarder();
+				receiver = new UDPReceiver(this, networkInfoDTO);	
+				break;
+			}
 
-			forwarderUDP = new UDPForwarder();
-			receiverUDP = new UDPReceiver(this, networkInfoDTO);
 
-			initUPDListener();
+			initCommListener();
 		} catch (final IOException ex) {
 			System.err.println(ex);
 			System.exit(-1);
@@ -94,15 +109,15 @@ public class ContextCommControllerImpl implements ContextCommController,
 		return portNumber;
 	}
 
-	private void initUPDListener() {
-		final Thread udpListener = new Thread(new Runnable() {
+	public void initCommListener() {
+		final Thread commListener = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				receiverUDP.receive();
+				receiver.receive();
 			}
 		});
-		udpListener.start();
+		commListener.start();
 	}
 
 	@Override
@@ -111,7 +126,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 			final Message Message = new MessageDTO(hostIp, hostName,
 					portNumber, 0, new Date().getTime(), 0,
 					MessageType.INIT_COMM);
-			forwarderUDP.send(Message, networkInfoDTO);
+			forwarder.send(Message, networkInfoDTO);
 		} catch (final IOException ex) {
 			System.out.println(ex);
 		}
@@ -125,7 +140,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 		message.setTimestamp(new Date().getTime());
 
 		try {
-			forwarderUDP.send(message, networkInfoDTO);
+			forwarder.send(message, networkInfoDTO);
 		} catch (final IOException ex) {
 			System.out.println(ex);
 		}
@@ -133,7 +148,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 
 	public void propagateMessage(final Message message) {
 		try {
-			forwarderUDP.sendBroadCast(message, networkInfoDTO);
+			forwarder.sendBroadCast(message, networkInfoDTO);
 		} catch (final IOException ex) {
 			System.out.println(ex);
 		}
@@ -142,7 +157,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 	public void sendMessage(final Message message,
 			final NetworkInfoDTO networkInfoDTO) {
 		try {
-			forwarderUDP.send(message, networkInfoDTO);
+			forwarder.send(message, networkInfoDTO);
 		} catch (final IOException ex) {
 			System.out.println(ex);
 		}
@@ -151,7 +166,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 	@Override
 	public void endMeeting() {
 		try {
-			receiverUDP.end();
+			receiver.end();
 			ipTables.clear();
 			messages.clear();
 		} catch (final IOException ex) {
@@ -160,7 +175,7 @@ public class ContextCommControllerImpl implements ContextCommController,
 	}
 
 	@Override
-	public void notifyUDPMsg(final Message message) {
+	public void notifyMsg(final Message message) {
 
 		if (!messages.containsKey(message.getTimestamp())) {
 
