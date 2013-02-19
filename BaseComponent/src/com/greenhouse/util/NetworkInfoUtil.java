@@ -33,11 +33,11 @@ public class NetworkInfoUtil {
 	
 	public static CommMode getMode(){
 		if(resources==null)
-			return CommMode.UDP;
+			return CommMode.TCP;
 		try {
 			return CommMode.values()[Integer.valueOf(resources.getString(MODE))];
 		} catch (NumberFormatException e) {
-			return CommMode.UDP;
+			return CommMode.TCP;
 		}
 	}
 
